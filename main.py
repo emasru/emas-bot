@@ -48,9 +48,9 @@ async def ping():
     await bot.say("pong")
 
 
-@bot.command()
+@bot.command(description="rolls a random integer in between the specified number and 1")
 async def roll(dice: int):
-    result = random.randint(dice)
+    result = random.randint(1, dice)
     await bot.say(result)
 
 
