@@ -38,9 +38,9 @@ async def iss():
     longitude = position.get("longitude")
     geo_name = f.location_query(position)
     hemisphere = f.hemisphere_check(position)
-    message1 = "The current position of the ISS is Lat:", latitude, " and Lon:", longitude, "//", hemisphere
+    message1 = f"The current position of the ISS is Lat: {latitude} ,Lon: {longitude} // {hemisphere}"
     await bot.say(message1)
-    message2 = "Current address: ", geo_name
+    message2 = f"Current address: {geo_name}"
     await bot.say(message2)  #TODO Fix reference error in message 1 and 2 (how to format strings?)
 
 

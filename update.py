@@ -7,13 +7,13 @@ except:
     pass
 
 
-async def location_query(position):
+def location_query(position):
     location_query_latitude = str(position.get("latitude"))
     location_query_longitude = str(position.get("longitude"))
     try:
         constructed_query = location_query_latitude + "," + location_query_longitude
         address = Nominatim(user_agent="iss-checker1")
-        location = await address.reverse(constructed_query)
+        location = address.reverse(constructed_query)
         return location.address
     except:
         pass
