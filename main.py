@@ -42,15 +42,15 @@ async def iss():
     geo_name = f.location_query(position)
     hemisphere = f.hemisphere_check(position)
     embed = discord.Embed(title="ISS tracker", url="https://github.com/emasru/iss_tracker", description="Tracks the ISS", color=0x800080)
-    embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
-    embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg")
-    embed.add_field(name="Latitude", value=latitude, inline=True)
-    embed.add_field(name="Longitude", value=longitude, inline=True)
-    embed.add_field(name="Hemisphere", value=hemisphere, inline=True)
+    await embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
+    await embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg")
+    await embed.add_field(name="Latitude", value=latitude, inline=True)
+    await embed.add_field(name="Longitude", value=longitude, inline=True)
+    await embed.add_field(name="Hemisphere", value=hemisphere, inline=True)
     if geo_name is None:
         geo_name = "None (Sea)"
-    embed.add_field(name="Address", value=geo_name, inline=True)
-    embed.set_footer(text=update_timestamp)
+    await embed.add_field(name="Address", value=geo_name, inline=True)
+    await embed.set_footer(text=update_timestamp)
     await bot.say(embed=embed)
 
 
