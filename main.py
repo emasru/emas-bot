@@ -5,6 +5,7 @@ import logging
 import time
 from datetime import datetime
 import update as f
+from urllib import request
 
 logging.basicConfig(level=logging.INFO)
 bot = commands.Bot(command_prefix='?', description="description")
@@ -32,7 +33,7 @@ async def marth():
 async def iss():
     contents = f.pos_update()
     if contents == 1:
-        await bot.say("Could not retrieve position")
+        raise request.HTTPError
     position = contents.get("iss_position")
     latitude = position.get("latitude")
     longitude = position.get("longitude")

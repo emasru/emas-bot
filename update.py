@@ -60,7 +60,7 @@ def pos_update():  # Sends a GET request for information about the ISS (position
         url_data = url.urlopen("http://api.open-notify.org/iss-now.json").read()
         loaded = json.loads(url_data)
         return loaded
-    except Exception:
+    except url.HTTPError:
         print("Could not retrieve position")
         return 1
 
