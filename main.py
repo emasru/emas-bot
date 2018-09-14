@@ -36,12 +36,22 @@ async def iss():
     position = contents.get("iss_position")
     latitude = position.get("latitude")
     longitude = position.get("longitude")
+    update_timestamp = time.time()
+    update_timestamp = datetime.utcfromtimestamp(update_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    update_timestamp += " (UTC)"
     geo_name = f.location_query(position)
     hemisphere = f.hemisphere_check(position)
-    message1 = f"The current position of the ISS is Lat: {latitude} ,Lon: {longitude} // {hemisphere}"
-    await bot.say(message1)
-    message2 = f"Current address: {geo_name}"
-    await bot.say(message2)  #TODO Fix reference error in message 1 and 2 (how to format strings?)
+    embed = discord.Embed(title="ISS tracker", url="https://github.com/emasru/iss_tracker", description="Tracks the ISS", color=0x800080)
+    embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
+    embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg")
+    embed.add_field(name="Latitude", value=latitude, inline=True)
+    embed.add_field(name="Longitude", value=longitude, inline=True)
+    embed.add_field(name="Hemisphere", value=hemisphere, inline=True)
+    if geo_name is None:
+        geo_name = "None (Sea)"
+    embed.add_field(name="Address", value=geo_name, inline=True)
+    embed.set_footer(text=update_timestamp)
+    await bot.say(embed=embed)
 
 
 @bot.command()
@@ -110,3 +120,14 @@ async def _bot():
 
 
 bot.run(API_TOKEN)
+
+'''
+embed=discord.Embed(title=ISS tracker, url=https://github.com/emasru/iss_tracker, description=Tracks the ISS, color=0x800080)
+embed.set_author(name=emas-bot,icon_url=https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png)
+embed.set_thumbnail(url=https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg)
+embed.add_field(name=Latitude, value=latitude, inline=True)
+embed.add_field(name=Longitude, value=longitude, inline=True)
+embed.add_field(name=Hemisphere, value=hemisphere, inline=True)
+embed.add_field(name=Address, value=address, inline=True)
+await self.bot.say(embed=embed)
+'''
