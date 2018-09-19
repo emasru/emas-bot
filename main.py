@@ -4,14 +4,17 @@ import random
 import logging
 import time
 from datetime import datetime
-import update as f
 from urllib import request
+from api_geo import Tracker
+import CogMaw as maw
 
 logging.basicConfig(level=logging.INFO)
 bot = commands.Bot(command_prefix='?', description="description")
 
 token = open("token.txt", "r")
 API_TOKEN = token.read()
+riot_token = open("riot_token.txt", "r")
+RIOT_TOKEN = riot_token.read()
 
 
 @bot.event
@@ -29,9 +32,30 @@ async def marth():
     await bot.say("suger kuk")
 
 
+@bot.command()
+async def league(player_name, region):
+    global RIOT_TOKEN
+    summoner = maw.Summoner(RIOT_TOKEN, region=region, name=player_name)
+
+    info = summoner.get_summoner_info()
+    if info == 1:
+        await bot.say("Could not find user; either the API is down or the user doesn't exist")
+    info_list = maw.Json(summoner)
+
+    embed = discord.Embed(title="Summoner Info", description="Information about a summoner", color=0x800080)
+    embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
+    embed.set_thumbnail(url=summoner.get_icon(info_list.profileIcon))
+    embed.add_field(name="Name", value=info_list.name)
+    embed.add_field(name="Level", value=info_list.level)
+    embed.add_field(name="ID", value=info_list.id)
+    await bot.say(embed=embed)
+
+
 @bot.command(description="Gives the current position and address of the ISS")
 async def iss():
-    contents = f.pos_update()
+    version = "MOBILE 1.0"
+    tracker = Tracker(version)
+    contents = tracker.pos_update()
     if contents == 1:
         raise request.HTTPError
     position = contents.get("iss_position")
@@ -40,8 +64,8 @@ async def iss():
     update_timestamp = time.time()
     update_timestamp = datetime.utcfromtimestamp(update_timestamp).strftime('%Y-%m-%d %H:%M:%S')
     update_timestamp += " (UTC)"
-    geo_name = f.location_query(position)
-    hemisphere = f.hemisphere_check(position)
+    geo_name = tracker.location_query(position)
+    hemisphere = tracker.hemisphere_check(position)
     embed = discord.Embed(title="ISS tracker", url="https://github.com/emasru/iss_tracker", description="Tracks the ISS", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
     embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg")
