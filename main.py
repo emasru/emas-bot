@@ -17,6 +17,13 @@ riot_token = open("riot_token.txt", "r")
 RIOT_TOKEN = riot_token.read()
 
 
+def embed_timestamp():
+    update_timestamp = time.time()
+    update_timestamp = datetime.utcfromtimestamp(update_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    update_timestamp += " (UTC)"
+    return update_timestamp
+
+
 @bot.event
 async def on_ready():
     timestamp = time.time()
@@ -32,22 +39,53 @@ async def marth():
     await bot.say("suger kuk")
 
 
-@bot.command()
-async def league(player_name, region):
-    global RIOT_TOKEN
-    summoner = maw.Summoner(RIOT_TOKEN, region=region, name=player_name)
+@bot.group(pass_context=True)
+async def league(ctx):
+    if ctx.invoked_subcommand is None:
+        await bot.say("No subcommand invoked")
 
-    info = summoner.get_summoner_info()
-    if info == 1:
-        await bot.say("Could not find user; either the API is down or the user doesn't exist")
-    info_list = maw.Json(summoner)
+
+@league.command(description="Looks up a summoner. Region defaults to EUW")
+async def summoner(player_name, **region):
+    global RIOT_TOKEN
+    player = maw.Summoner(RIOT_TOKEN, region=region, name=player_name)
+    player.region_check()
+    try:
+        player.get_summoner_info()
+    except discord.ext.commands.errors.CommandInvokeError:
+        bot.say("Could not complete query")
+        raise request.HTTPError("404 not found")
+    info_list = maw.JsonSummoner(player)
+    timestamp = embed_timestamp()
 
     embed = discord.Embed(title="Summoner Info", description="Information about a summoner", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
-    embed.set_thumbnail(url=summoner.get_icon(info_list.profileIcon))
+    embed.set_thumbnail(url=player.get_icon(info_list.profileIcon))
     embed.add_field(name="Name", value=info_list.name)
     embed.add_field(name="Level", value=info_list.level)
     embed.add_field(name="ID", value=info_list.id)
+    embed.set_footer(text=timestamp)
+    await bot.say(embed=embed)
+
+
+@league.command(description="Checks the status for a given region. Defaults to EUW")
+async def status(**region):
+    global RIOT_TOKEN
+    status_check = maw.Status(RIOT_TOKEN, region)
+    status_check.region_check()
+    status_check.get_status()
+    info_list = maw.JsonStatus(status_check)
+    info_list.get_status()
+    timestamp = embed_timestamp()
+
+    embed = discord.Embed(title="League status", description="Status of League of Legends' services", color=0x800080)
+    embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
+    embed.set_thumbnail(url="https://www.riotgames.com/darkroom/original/06fc475276478d31c559355fa475888c:af22b5d4c9014d23b550ea646eb9dcaf/riot-logo-fist-only.png")
+    embed.add_field(name="Game", value="Placeholder")
+    embed.add_field(name="Store", value="Placeholder")
+    embed.add_field(name="Website", value="Placeholder")
+    embed.add_field(name="Client", value="Placeholder")
+    embed.set_footer(text=timestamp)
     await bot.say(embed=embed)
 
 
@@ -61,9 +99,7 @@ async def iss():
     position = contents.get("iss_position")
     latitude = position.get("latitude")
     longitude = position.get("longitude")
-    update_timestamp = time.time()
-    update_timestamp = datetime.utcfromtimestamp(update_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    update_timestamp += " (UTC)"
+    timestamp = embed_timestamp()
     geo_name = tracker.location_query(position)
     hemisphere = tracker.hemisphere_check(position)
     embed = discord.Embed(title="ISS tracker", url="https://github.com/emasru/iss_tracker", description="Tracks the ISS", color=0x800080)
@@ -75,7 +111,7 @@ async def iss():
     if geo_name is None:
         geo_name = "None (Sea)"
     embed.add_field(name="Address", value=geo_name, inline=True)
-    embed.set_footer(text=update_timestamp)
+    embed.set_footer(text=timestamp)
     await bot.say(embed=embed)
 
 
