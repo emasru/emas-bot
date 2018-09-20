@@ -46,24 +46,23 @@ async def league(ctx):
 
 
 @league.command(description="Looks up a summoner. Region defaults to EUW")
-async def summoner(player_name, **region):
+async def summoner(player_name, region="euw"):
     global RIOT_TOKEN
-    player = maw.Summoner(RIOT_TOKEN, region=region, name=player_name)
-    player.region_check()
+    player = maw.Summoner(RIOT_TOKEN, name=player_name)
+    region_url = player.region_check(region)
     try:
-        player.get_summoner_info()
-    except discord.ext.commands.errors.CommandInvokeError:
+        player.get_summoner_info(region_url)
+    except Exception:
         bot.say("Could not complete query")
-        raise request.HTTPError("404 not found")
-    info_list = maw.JsonSummoner(player)
+    player.json()
     timestamp = embed_timestamp()
 
     embed = discord.Embed(title="Summoner Info", description="Information about a summoner", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
-    embed.set_thumbnail(url=player.get_icon(info_list.profileIcon))
-    embed.add_field(name="Name", value=info_list.name)
-    embed.add_field(name="Level", value=info_list.level)
-    embed.add_field(name="ID", value=info_list.id)
+    embed.set_thumbnail(url=player.get_icon(player.profileIcon))
+    embed.add_field(name="Name", value=player.loaded_name)
+    embed.add_field(name="Level", value=player.level)
+    embed.add_field(name="ID", value=player.id)
     embed.set_footer(text=timestamp)
     await bot.say(embed=embed)
 
@@ -71,20 +70,19 @@ async def summoner(player_name, **region):
 @league.command(description="Checks the status for a given region. Defaults to EUW")
 async def status(**region):
     global RIOT_TOKEN
-    status_check = maw.Status(RIOT_TOKEN, region)
-    status_check.region_check()
-    status_check.get_status()
-    info_list = maw.JsonStatus(status_check)
-    info_list.get_status()
+    status_check = maw.Status(RIOT_TOKEN)
+    region_url = maw.Summoner.region_check(region)
+    status_check.get_status(region_url)
+    status_check.json()
     timestamp = embed_timestamp()
 
     embed = discord.Embed(title="League status", description="Status of League of Legends' services", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
     embed.set_thumbnail(url="https://www.riotgames.com/darkroom/original/06fc475276478d31c559355fa475888c:af22b5d4c9014d23b550ea646eb9dcaf/riot-logo-fist-only.png")
-    embed.add_field(name="Game", value="Placeholder")
-    embed.add_field(name="Store", value="Placeholder")
-    embed.add_field(name="Website", value="Placeholder")
-    embed.add_field(name="Client", value="Placeholder")
+    embed.add_field(name="Game", value=status_check.game_status)
+    embed.add_field(name="Store", value=status_check.store_status)
+    embed.add_field(name="Website", value=status_check.website_status)
+    embed.add_field(name="Client", value=status_check.client_status)
     embed.set_footer(text=timestamp)
     await bot.say(embed=embed)
 
