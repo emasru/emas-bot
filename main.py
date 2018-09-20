@@ -39,13 +39,13 @@ async def marth():
     await bot.say("suger kuk")
 
 
-@bot.group(pass_context=True)
+@bot.group(pass_context=True, description="Default region for commands is EUW")
 async def league(ctx):
     if ctx.invoked_subcommand is None:
         await bot.say("No subcommand invoked")
 
 
-@league.command(description="Looks up a summoner. Region defaults to EUW")
+@league.command(description="Looks up a summoner")
 async def summoner(player_name, region="euw"):
     global RIOT_TOKEN
     player = maw.Summoner(RIOT_TOKEN, name=player_name)
@@ -67,7 +67,18 @@ async def summoner(player_name, region="euw"):
     await bot.say(embed=embed)
 
 
-@league.command(description="Checks the status for a given region. Defaults to EUW")
+@league.command(description="Looks up an ongoing match by summoner")
+async def match(player_name, region="euw"):
+    global RIOT_TOKEN
+    player = maw.Summoner(RIOT_TOKEN, name=player_name)
+    region_url = player.region_check(region)
+    player.get_summoner_info(region_url)
+    player.json()
+    player_match = maw.Match(RIOT_TOKEN, player.id)
+    player_match.get_match(region_url)
+    player_match.json()
+
+@league.command(description="Checks the status for a given region")
 async def status(**region):
     global RIOT_TOKEN
     status_check = maw.Status(RIOT_TOKEN)

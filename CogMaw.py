@@ -56,7 +56,7 @@ class Summoner:
         self.profileIcon = self.loaded.get("profileIconId")
         self.loaded_name = self.loaded.get("name")
         self.level = self.loaded.get("summonerLevel")
-        self.id = self.loaded.get("accountId")
+        self.id = self.loaded.get("id")
 
 
 class Status:
@@ -86,6 +86,32 @@ class Status:
         self.client_status = self.loaded["services"][3]["status"]
         if self.client_status == "online":
             self.client_status = "Online"
+
+class Match:
+    def __init__(self, key, player_id):
+        self.player_id = player_id
+        self.key = key
+        self.loaded = None
+        self.game_start_time = None
+        self.game_length = None
+        self.champion_id = None
+        self.icon_id = None
+
+
+    def get_match(self, region_url):
+        url_construct = 'https://%s.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/%s?api_key=%s' % (region_url, self.player_id, self.key)
+        print(url_construct)
+        url_data = url.urlopen(url_construct).read()
+        self.loaded = json.loads(url_data)
+        print(self.loaded["participants"].get("0"))
+
+
+    def json(self):
+        self.game_start_time = self.loaded.get("gameStartTime")
+        self.game_length = self.loaded.get("gameLength")
+        self.champion_id = self.loaded.participants["participants"]["championId"]
+        self.icon_id = self.loaded.participants[0]["profileIconID"]  # TODO
+
 
 if __name__ == "__main__":
     summoner_name = input("Summoner name: ")
