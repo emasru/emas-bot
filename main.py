@@ -50,10 +50,9 @@ async def summoner(player_name, region="euw"):
     global RIOT_TOKEN
     player = maw.Summoner(RIOT_TOKEN, name=player_name)
     region_url = player.region_check(region)
-    try:
-        player.get_summoner_info(region_url)
-    except Exception:
-        bot.say("Could not complete query")
+    await player.get_summoner_info(region_url)
+    if player.loaded is None:
+        await bot.say("Summoner not found")
     player.json()
     timestamp = embed_timestamp()
 
@@ -72,18 +71,19 @@ async def match(player_name, region="euw"):
     global RIOT_TOKEN
     player = maw.Summoner(RIOT_TOKEN, name=player_name)
     region_url = player.region_check(region)
-    player.get_summoner_info(region_url)
+    await player.get_summoner_info(region_url)
     player.json()
     player_match = maw.Match(RIOT_TOKEN, player.id)
-    player_match.get_match(region_url)
+    await player_match.get_match(region_url)
     player_match.json()
+
 
 @league.command(description="Checks the status for a given region")
 async def status(**region):
     global RIOT_TOKEN
     status_check = maw.Status(RIOT_TOKEN)
     region_url = maw.Summoner.region_check(region)
-    status_check.get_status(region_url)
+    await status_check.get_status(region_url)
     status_check.json()
     timestamp = embed_timestamp()
 

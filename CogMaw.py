@@ -1,5 +1,8 @@
 import json
 from urllib import request as url
+import asyncio
+import aiohttp
+import aiodns
 
 
 class Summoner:
@@ -12,10 +15,13 @@ class Summoner:
         self.level = None
         self.id = None
 
-    def get_summoner_info(self, region_url):
-        url_construct = 'https://%s.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=%s' % (region_url, self.name, self.key)
-        url_data = url.urlopen(url_construct).read()
-        self.loaded = json.loads(url_data)
+    async def get_summoner_info(self, region_url):
+        try:
+            url_construct = 'https://%s.api.riotgames.com/lol/summoner/v3/summoners/by-name/%s?api_key=%s' % (region_url, self.name, self.key)
+            async with aiohttp.get(url_construct) as url_data:
+                self.loaded = await url_data.json()
+        except:
+            pass
 
     @staticmethod
     def get_icon(icon_id):
@@ -68,10 +74,10 @@ class Status:
         self.website_status = None
         self.client_status = None
 
-    def get_status(self, region_url):
+    async def get_status(self, region_url):
         url_construct = 'https://%s.api.riotgames.com/lol/status/v3/shard-data?api_key=%s' % (region_url, self.key)
-        url_data = url.urlopen(url_construct).read()
-        self.loaded = json.loads(url_data)
+        async with aiohttp.get(url_construct) as url_data:
+            self.loaded = await url_data.json()
 
     def json(self):
         self.game_status = self.loaded["services"][0]["status"]
@@ -87,6 +93,7 @@ class Status:
         if self.client_status == "online":
             self.client_status = "Online"
 
+
 class Match:
     def __init__(self, key, player_id):
         self.player_id = player_id
@@ -97,20 +104,17 @@ class Match:
         self.champion_id = None
         self.icon_id = None
 
-
-    def get_match(self, region_url):
+    async def get_match(self, region_url):
         url_construct = 'https://%s.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/%s?api_key=%s' % (region_url, self.player_id, self.key)
-        print(url_construct)
-        url_data = url.urlopen(url_construct).read()
-        self.loaded = json.loads(url_data)
-        print(self.loaded["participants"].get("0"))
-
+        async with aiohttp.get(url_construct) as url_data:
+            self.loaded = await url_data.json()
 
     def json(self):
         self.game_start_time = self.loaded.get("gameStartTime")
         self.game_length = self.loaded.get("gameLength")
-        self.champion_id = self.loaded.participants["participants"]["championId"]
-        self.icon_id = self.loaded.participants[0]["profileIconID"]  # TODO
+
+        self.champion_id = self.loaded["participants"][0]["championId"]
+        self.icon_id = self.loaded["participants"][0]["championId"]  # TODO
 
 
 if __name__ == "__main__":
