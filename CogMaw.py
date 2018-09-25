@@ -25,7 +25,7 @@ class Summoner:
 
     @staticmethod
     def get_icon(icon_id):
-        url_construct = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/%d.png' % icon_id
+        url_construct = 'http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/%s.png' % icon_id
         return url_construct
 
     @staticmethod
@@ -109,12 +109,18 @@ class Match:
         async with aiohttp.get(url_construct) as url_data:
             self.loaded = await url_data.json()
 
-    def json(self):
-        self.game_start_time = self.loaded.get("gameStartTime")
-        self.game_length = self.loaded.get("gameLength")
+    async def json(self):
+        self.game_start_time = await self.loaded.get("gameStartTime")
+        self.game_length = await self.loaded.get("gameLength")
 
-        self.champion_id = self.loaded["participants"][0]["championId"]
-        self.icon_id = self.loaded["participants"][0]["championId"]  # TODO
+        i = 0
+        while True:
+            if self.loaded["participants"][i]["summonerId"] == self.player_id:
+                break
+            i += 1
+
+        self.champion_id = await self.loaded["participants"][i]["championId"]
+        self.icon_id = await self.loaded["participants"][i]["profileIconId"]  # TODO
 
 
 if __name__ == "__main__":

@@ -77,6 +77,15 @@ async def match(player_name, region="euw"):
     await player_match.get_match(region_url)
     player_match.json()
 
+    embed = discord.Embed(title="League status", description="Status of League of Legends' services", color=0x800080)
+    embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
+    embed.set_thumbnail(url="https://www.riotgames.com/darkroom/original/06fc475276478d31c559355fa475888c:af22b5d4c9014d23b550ea646eb9dcaf/riot-logo-fist-only.png")
+    embed.add_field(name="Game started", value=player_match.game_start_time)
+    embed.add_field(name="Current game time", value=player_match.game_length)
+    embed.add_field(name="Champion", value=player_match.champion_id)
+    embed.set_footer(text=embed_timestamp())
+    await bot.say(embed=embed)
+
 
 @league.command(description="Checks the status for a given region")
 async def status(**region):
@@ -85,7 +94,6 @@ async def status(**region):
     region_url = maw.Summoner.region_check(region)
     await status_check.get_status(region_url)
     status_check.json()
-    timestamp = embed_timestamp()
 
     embed = discord.Embed(title="League status", description="Status of League of Legends' services", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
@@ -94,7 +102,7 @@ async def status(**region):
     embed.add_field(name="Store", value=status_check.store_status)
     embed.add_field(name="Website", value=status_check.website_status)
     embed.add_field(name="Client", value=status_check.client_status)
-    embed.set_footer(text=timestamp)
+    embed.set_footer(text=embed_timestamp())
     await bot.say(embed=embed)
 
 
