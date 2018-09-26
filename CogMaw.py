@@ -55,7 +55,7 @@ class Summoner:
         elif region == "pbe" or "beta":
             region_url = "pbe1"
         else:
-            region_url = "euw1"
+            region_url = "euw1"  # TODO ?????
         print("url", region_url)
         return region_url
 
