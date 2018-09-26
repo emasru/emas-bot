@@ -2,7 +2,6 @@ import json
 from urllib import request as url
 import asyncio
 import aiohttp
-import aiodns
 
 
 class Summoner:
@@ -30,6 +29,7 @@ class Summoner:
 
     @staticmethod
     def region_check(region):
+        print("para", region)
         if region == "euw" or "euwest":
             region_url = "euw1"
         elif region == "na":
@@ -56,6 +56,7 @@ class Summoner:
             region_url = "pbe1"
         else:
             region_url = "euw1"
+        print("url", region_url)
         return region_url
 
     def json(self):
@@ -106,12 +107,13 @@ class Match:
 
     async def get_match(self, region_url):
         url_construct = 'https://%s.api.riotgames.com/lol/spectator/v3/active-games/by-summoner/%s?api_key=%s' % (region_url, self.player_id, self.key)
+        print(url_construct)
         async with aiohttp.get(url_construct) as url_data:
             self.loaded = await url_data.json()
 
-    async def json(self):
-        self.game_start_time = await self.loaded.get("gameStartTime")
-        self.game_length = await self.loaded.get("gameLength")
+    def json(self):
+        self.game_start_time = self.loaded.get("gameStartTime")
+        self.game_length = self.loaded.get("gameLength")
 
         i = 0
         while True:
@@ -119,8 +121,8 @@ class Match:
                 break
             i += 1
 
-        self.champion_id = await self.loaded["participants"][i]["championId"]
-        self.icon_id = await self.loaded["participants"][i]["profileIconId"]  # TODO
+        self.champion_id = self.loaded["participants"][i]["championId"]
+        self.icon_id = self.loaded["participants"][i]["profileIconId"]  # TODO
 
 
 if __name__ == "__main__":

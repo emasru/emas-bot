@@ -77,7 +77,7 @@ async def match(player_name, region="euw"):
     await player_match.get_match(region_url)
     player_match.json()
 
-    embed = discord.Embed(title="League status", description="Status of League of Legends' services", color=0x800080)
+    embed = discord.Embed(title="Match status", description="Information about a match", color=0x800080)
     embed.set_author(name="emas-bot", icon_url="https://cdn.discordapp.com/avatars/455442815800049685/0db7f7e2361b5f4ecf109601be986617.png")
     embed.set_thumbnail(url="https://www.riotgames.com/darkroom/original/06fc475276478d31c559355fa475888c:af22b5d4c9014d23b550ea646eb9dcaf/riot-logo-fist-only.png")
     embed.add_field(name="Game started", value=player_match.game_start_time)
