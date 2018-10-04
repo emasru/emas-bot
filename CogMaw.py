@@ -29,34 +29,32 @@ class Summoner:
 
     @staticmethod
     def region_check(region):
-        print("para", region)
-        if region == "euw" or "euwest":
+        if region == "euw" or region == "euwest":
             region_url = "euw1"
-        elif region == "na":
+        elif region == "na" or region == "na1":
             region_url = "na1"
-        elif region == "eune" or "eun":
+        elif region == "eune" or region == "eun":
             region_url = "eun1"
-        elif region == "ru" or "russia":
+        elif region == "ru" or region == "russia":
             region_url = "ru"
-        elif region == "jp" or "japan":
+        elif region == "jp" or region == "japan":
             region_url = "jp1"
-        elif region == "kr" or "korea":
+        elif region == "kr" or region == "korea":
             region_url = "kr"
-        elif region == "br" or "brazil":
+        elif region == "br" or region == "brazil":
             region_url = "br1"
         elif region == "lan":
             region_url = "la1"
         elif region == "las":
             region_url = "la2"
-        elif region == "oc" or "oce" or "oceania":
+        elif region == "oc" or region == "oce" or region == "oceania":
             region_url = "oc1"
-        elif region == "tr" or "turkey" or "tur":
+        elif region == "tr" or region == "turkey" or region == "tur":
             region_url = "tr1"
-        elif region == "pbe" or "beta":
+        elif region == "pbe" or region == "beta":
             region_url = "pbe1"
         else:
             region_url = "euw1"  # TODO ?????
-        print("url", region_url)
         return region_url
 
     def json(self):

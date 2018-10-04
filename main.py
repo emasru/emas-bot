@@ -144,6 +144,16 @@ async def add(left: int, right: int):
 
 
 @bot.command()
+async def rate(name):
+    number = random.randint(0, 100)
+    string = f"I rate {name} a {number}/100."
+    if name == "emas-bot":
+        await bot.say("I rate emas-bot a 100/100.")
+    else:
+        await bot.say(string)
+
+
+@bot.command()
 async def ban(member):
     try:
         await bot.ban(member, 0)
