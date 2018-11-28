@@ -10,7 +10,7 @@ import CogMaw as maw
 
 logging.basicConfig(level=logging.INFO)
 bot = commands.Bot(command_prefix='?', description="description")
-
+    
 token = open("token.txt", "r")
 API_TOKEN = token.read()
 riot_token = open("riot_token.txt", "r")
@@ -130,6 +130,11 @@ async def iss():
     embed.add_field(name="Address", value=geo_name, inline=True)
     embed.set_footer(text=timestamp)
     await bot.say(embed=embed)
+
+
+@bot.command(description="Gives information about an anime")
+async def anime(name):
+    pass
 
 
 @bot.command()
